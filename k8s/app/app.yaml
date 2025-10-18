@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jobmgr-api
+  namespace: jobmgr
+  labels:
+    app: jobmgr-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jobmgr-api
+  template:
+    metadata:
+      labels:
+        app: jobmgr-api
+    spec:
+      serviceAccountName: jobmgr-runner
+      containers:
+        - name: api
+          image: jobmgr-api:v2
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8085
+          env:
+            - name: APP_MONGO_URI
+              value: mongodb://mongo-db-svc.jobmgr.svc.cluster.local:27017/jobmanagerdb
+            - name: EXEC_MODE
+              value: "k8s"
+            - name: JOBMGR_NAMESPACE
+              value: "jobmgr"
+          readinessProbe:
+            httpGet:
+              path: /v1/tasks
+              port: 8085
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /v1/tasks
+              port: 8085
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jobmgr-api-svc
+  namespace: jobmgr
+  labels:
+    app: jobmgr-api
+spec:
+  type: NodePort
+  selector:
+    app: jobmgr-api
+  ports:
+    - name: http
+      port: 8085
+      targetPort: 8085
+      nodePort: 30085

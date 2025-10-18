@@ -1,0 +1,7 @@
+target/
+.git/
+.gitignore
+*.md
+screenshots/
+docs/
+k8s/
