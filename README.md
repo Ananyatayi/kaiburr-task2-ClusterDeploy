@@ -60,7 +60,7 @@ Service exposed at:
 
 ## 🖼️ Screenshots (Postman)
 **1️⃣ Get All Tasks**  
-![Get All Tasks](screenshots/get_Tasks.png)
+![Get All Tasks](screenshots/GET_Tasks.png)
 
 **2️⃣ Get Task by ID**  
 ![Get Task by ID](screenshots/GET_taskby_ID.png)
